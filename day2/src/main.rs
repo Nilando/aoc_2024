@@ -48,22 +48,18 @@ fn part2() {
 
     for line in reader.lines().map(|line| line.unwrap()) {
         let levels = line.split_whitespace().map(|lvl| lvl.parse::<usize>().unwrap());
-        if is_report_safe(levels.clone()) {
-            safe_counter += 1;
-        } else {
-            let len = levels.clone().count();
+        let len = levels.clone().count();
 
-            for i in 0..len {
-                let patched_levels = levels
-                    .clone()
-                    .enumerate()
-                    .filter(|(idx, _)| *idx != i)
-                    .map(|(_, lvl)| lvl);
+        for i in 0..len {
+            let patched_levels = levels
+                .clone()
+                .enumerate()
+                .filter(|(idx, _)| *idx != i)
+                .map(|(_, lvl)| lvl);
 
-                if is_report_safe(patched_levels) {
-                    safe_counter += 1;
-                    break;
-                }
+            if is_report_safe(patched_levels) {
+                safe_counter += 1;
+                break;
             }
         }
     }
