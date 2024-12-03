@@ -1,10 +1,9 @@
 use std::fs::File;
 use std::io::{BufReader, BufRead};
 
-fn is_report_safe(levels: &Vec<usize>) -> bool {
-    let mut iter = levels.iter();
-    let mut prev: usize = *iter.next().unwrap();
-    let mut curr: usize = *iter.next().unwrap();
+fn is_report_safe(mut levels: impl Iterator<Item = usize>) -> bool {
+    let mut prev: usize = levels.next().unwrap();
+    let mut curr: usize = levels.next().unwrap();
     let increasing: bool = prev < curr;
 
     if prev.abs_diff(curr) > 3 
@@ -12,25 +11,16 @@ fn is_report_safe(levels: &Vec<usize>) -> bool {
         return false;
     }
 
-    for level in iter {
+    for level in levels {
         prev = curr;
-        curr = *level;
+        curr = level;
 
         if prev.abs_diff(curr) > 3 
-        || prev == curr {
+        || prev == curr 
+        || (prev < curr && !increasing)
+        || (prev > curr && increasing) {
             return false;
         }
-
-        if prev < curr {
-            if !increasing {
-                return false;
-            }
-        } else {
-            if increasing {
-                return false;
-            }
-        }
-
     }
 
     return true;
@@ -42,13 +32,13 @@ fn part1() {
     let mut safe_counter = 0;
 
     for line in reader.lines().map(|line| line.unwrap()) {
-        let levels: Vec<usize> = line.split_whitespace().map(|lvl| lvl.parse::<usize>().unwrap()).collect();
-        if is_report_safe(&levels) {
+        let levels = line.split_whitespace().map(|lvl| lvl.parse::<usize>().unwrap());
+        if is_report_safe(levels) {
             safe_counter += 1;
         }
     }
 
-    println!("safe counter: {}", safe_counter);
+    println!("safe counter(no dampener): {}", safe_counter);
 }
 
 fn part2() {
@@ -57,16 +47,20 @@ fn part2() {
     let mut safe_counter = 0;
 
     for line in reader.lines().map(|line| line.unwrap()) {
-        let levels: Vec<usize> = line.split_whitespace().map(|lvl| lvl.parse::<usize>().unwrap()).collect();
-        if is_report_safe(&levels) {
+        let levels = line.split_whitespace().map(|lvl| lvl.parse::<usize>().unwrap());
+        if is_report_safe(levels.clone()) {
             safe_counter += 1;
         } else {
-            for i in 0..levels.len() {
-                let mut patched_levels = levels.clone();
+            let len = levels.clone().count();
 
-                patched_levels.remove(i);
+            for i in 0..len {
+                let patched_levels = levels
+                    .clone()
+                    .enumerate()
+                    .filter(|(idx, _)| *idx != i)
+                    .map(|(_, lvl)| lvl);
 
-                if is_report_safe(&patched_levels) {
+                if is_report_safe(patched_levels) {
                     safe_counter += 1;
                     break;
                 }
@@ -74,7 +68,7 @@ fn part2() {
         }
     }
 
-    println!("safe counter(with problem dampener): {}", safe_counter);
+    println!("safe counter(with dampener): {}", safe_counter);
 }
 
 fn main() {
