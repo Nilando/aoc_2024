@@ -1,8 +1,8 @@
 fn solution() {
     let file = std::fs::read_to_string("./input.txt").unwrap();
     let mut chars = file.chars().peekable();
-    let mut part1: usize = 0;
-    let mut part2: usize = 0;
+    let mut part1: u32 = 0;
+    let mut part2: u32 = 0;
     let mut flag = true;
 
     loop {
@@ -66,9 +66,11 @@ fn solution() {
                 continue;
             }
 
-            part1 += x.parse::<usize>().unwrap() * y.parse::<usize>().unwrap();
+            let a = x.parse::<u32>().unwrap();
+            let b = y.parse::<u32>().unwrap();
+            part1 += a + b;
             if flag {
-                part2 += x.parse::<usize>().unwrap() * y.parse::<usize>().unwrap();
+                part2 += a + b;
             }
         }
     }
