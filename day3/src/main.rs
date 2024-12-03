@@ -10,104 +10,66 @@ fn solution() {
             break;
         }
 
-        if chars.peek() == Some(&'d') {
+        if chars.peek() != Some(&'d') && chars.peek() != Some(&'m') {
             chars.next();
+            continue;
+        }
 
-            if chars.peek() != Some(&'o') {
-                continue
+        if chars.next_if_eq(&'d').is_some()
+        && chars.next_if_eq(&'o').is_some()
+        {
+            if chars.next_if_eq(&'(').is_some()
+            && chars.next_if_eq(&')').is_some() {
+                flag = true;
+                continue;
             }
-            chars.next();
 
-            if chars.peek() == Some(&'(') {
-                chars.next();
-                if chars.peek() == Some(&')') {
-                    flag = true;
-                    chars.next();
-                    continue
+            if chars.next_if_eq(&'n').is_some()
+            && chars.next_if_eq(&'\'').is_some() 
+            && chars.next_if_eq(&'t').is_some()
+            && chars.next_if_eq(&'(').is_some()
+            && chars.next_if_eq(&')').is_some() {
+                flag = false;
+                continue;
+            }
+        }
+
+        if chars.next_if_eq(&'m').is_some()
+        && chars.next_if_eq(&'u').is_some() 
+        && chars.next_if_eq(&'l').is_some()
+        && chars.next_if_eq(&'(').is_some() {
+            let mut x = String::new();
+            while let Some(p) = chars.peek() {
+                if p.is_digit(10) {
+                    let c = chars.next().unwrap();
+                    x.push(c);
+                } else {
+                    break;
                 }
             }
 
-            if chars.peek() != Some(&'n') {
-                continue
+            if chars.next_if_eq(&',').is_none() {
+                continue;
             }
-            chars.next();
 
-            if chars.peek() != Some(&'\'') {
-                continue
+            let mut y = String::new();
+            while let Some(p) = chars.peek() {
+                if p.is_digit(10) {
+                    let c = chars.next().unwrap();
+                    y.push(c);
+                } else {
+                    break;
+                }
             }
-            chars.next();
 
-            if chars.peek() != Some(&'t') {
-                continue
+            if chars.next_if_eq(&')').is_none() {
+                continue;
             }
-            chars.next();
 
-            if chars.peek() != Some(&'(') {
-                continue
+            part1 += x.parse::<usize>().unwrap() * y.parse::<usize>().unwrap();
+            if flag {
+                part2 += x.parse::<usize>().unwrap() * y.parse::<usize>().unwrap();
             }
-            chars.next();
-
-            if chars.peek() != Some(&')') {
-                continue
-            }
-            chars.next();
-
-            flag = false;
-            continue;
-        }
-
-        if chars.next() != Some('m') {
-            continue
-        }
-
-        if chars.peek() != Some(&'u') {
-            continue;
-        }
-        chars.next();
-
-        if chars.peek() != Some(&'l') {
-            continue;
-        }
-        chars.next();
-
-        if chars.peek() != Some(&'(') {
-            continue;
-        }
-        chars.next();
-
-        let mut x = String::new();
-        while let Some(p) = chars.peek() {
-            if p.is_digit(10) {
-                let c = chars.next().unwrap();
-                x.push(c);
-            } else {
-                break;
-            }
-        }
-
-        if chars.peek() != Some(&',') {
-            continue;
-        }
-        chars.next();
-
-        let mut y = String::new();
-        while let Some(p) = chars.peek() {
-            if p.is_digit(10) {
-                let c = chars.next().unwrap();
-                y.push(c);
-            } else {
-                break;
-            }
-        }
-
-        if chars.peek() != Some(&')') {
-            continue;
-        }
-        chars.next();
-
-        part1 += x.parse::<usize>().unwrap() * y.parse::<usize>().unwrap();
-        if flag {
-            part2 += x.parse::<usize>().unwrap() * y.parse::<usize>().unwrap();
         }
     }
 
