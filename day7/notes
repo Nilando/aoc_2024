@@ -1,0 +1,56 @@
+
+target: 4859
+operands: [35, 78, 43]
+i: 1
+
+
+target: 4859
+operands: [35, 78, 43]
+i: 1
+
+35 * 78 + 43
+
+fn main() {
+    let input = std::fs::read_to_string("./test.txt").unwrap();
+    let mut part1: u128 = 0;
+
+    for line in input.lines() {
+        let raw_equation: Vec<&str> = line.split(':').collect();
+        let target: usize = raw_equation[0].parse().unwrap();
+        let operands: Vec<usize> = raw_equation[1].trim().split(' ').map(|s| s.parse().unwrap()).collect();
+
+        for i in 0..3_usize.pow(operands.len() as u32 - 1) {
+            let mut sum = operands[0];
+            let mut x = i;
+
+            for operand in operands.iter().skip(1) {
+                if sum > target {
+                    break;
+                }
+
+                match x % 3 {
+                    0 => sum += operand,
+                    1 => sum *= operand,
+                    2 => {
+                        let mut a = sum.to_string(); 
+                        let b = operand.to_string();
+                        a.push_str(b.as_str());
+
+                        sum = a.parse().unwrap();
+                    },
+                    _ => panic!("bad"),
+                }
+
+                x -= x % 3;
+                x = x / 3;
+            }
+
+            if sum == target {
+                part1 += target as u128;
+                break;
+            }
+        }
+    }
+
+    println!("Part 1: {}", part1);
+}
